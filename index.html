@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSSSW</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-screen="menu">
+<canvas id="stage"></canvas>
+
+<div id="turnClock" role="status" aria-live="polite">
+  <div class="turnClockFrame">
+    <div id="turnClockLabel"><span id="turnClockOwner">GREEN TURN</span><span id="turnClockReadout">60.0s</span></div>
+    <div id="turnClockTrack"><div id="turnClockFill"></div></div>
+  </div>
+</div>
+
+<div id="confirmMove" role="dialog" aria-modal="true" aria-labelledby="confirmMoveTitle">
+  <h2 id="confirmMoveTitle">CONFIRM MOVE?</h2>
+  <p id="confirmMoveDesc">Execute this translation?</p>
+  <div class="confirmActions">
+    <button id="confirmYes" type="button">YES</button>
+    <button id="confirmNo" type="button">NO</button>
+  </div>
+</div>
+
+<div id="mainMenu" role="dialog" aria-labelledby="menuTitle">
+  <h1 id="menuTitle">CSSSW</h1>
+  <p id="menuSub">Select a minefield layout, then start the match. Green moves first.</p>
+  <div id="modeList">
+    <button id="modeMidline" class="modeBtn" type="button" aria-pressed="true">MODE A: MIDLINE TRENCH<span>Default. Mines are restricted strictly to central rows 2, 3, 4 and 5.</span></button>
+    <button id="modeHardcore" class="modeBtn" type="button" aria-pressed="false">MODE B: HARDCORE MINEFIELD<span>Mines are distributed randomly across all 64 squares.</span></button>
+  </div>
+  <section id="controlsGuide" aria-labelledby="controlsGuideTitle">
+    <h2 id="controlsGuideTitle">CONTROLS GUIDE</h2>
+    <div id="controlsColumns">
+      <section class="controlsPlayer p1Controls" aria-labelledby="player1ControlsTitle">
+        <h3 id="player1ControlsTitle">PLAYER 1 (GREEN)</h3>
+        <div class="controlsPhase">
+          <h4>Strategic Phase</h4>
+          <ul>
+            <li><strong>Left-Click:</strong> Select Piece</li>
+            <li><strong>Q / Scroll:</strong> Toggle Modes</li>
+            <li><strong>Left-Click:</strong> Move or Flag Tile</li>
+          </ul>
+        </div>
+        <div class="controlsPhase">
+          <h4>FPS Combat Phase</h4>
+          <ul>
+            <li><strong>WASD:</strong> Move</li>
+            <li><strong>Q / E:</strong> Rotate Camera Left / Right</li>
+            <li><strong>Spacebar:</strong> Fire</li>
+            <li><strong>Shift:</strong> Ability</li>
+          </ul>
+        </div>
+      </section>
+      <section class="controlsPlayer p2Controls" aria-labelledby="player2ControlsTitle">
+        <h3 id="player2ControlsTitle">PLAYER 2 (MAGENTA)</h3>
+        <div class="controlsPhase">
+          <h4>Strategic Phase</h4>
+          <ul>
+            <li><strong>Left-Click:</strong> Select Piece</li>
+            <li><strong>Q / Scroll:</strong> Toggle Modes</li>
+            <li><strong>Left-Click:</strong> Move or Flag Tile</li>
+          </ul>
+        </div>
+        <div class="controlsPhase">
+          <h4>FPS Combat Phase</h4>
+          <ul>
+            <li><strong>Arrow Keys:</strong> Move</li>
+            <li><strong>Comma (,) / Period (.):</strong> Rotate Camera Left / Right</li>
+            <li><strong>Enter:</strong> Fire</li>
+            <li><strong>Right Control:</strong> Ability</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </section>
+  <button id="btnStart" type="button">START MATCH</button>
+</div>
+<div id="hud">
+  <div id="turnBlock" data-side="white"><span id="turnLabel">Green turn</span><small id="roundLabel">Round 1</small></div>
+  <div class="block">
+    <p id="flagLabel">Flags Remaining: 5</p>
+    <p id="poolLabel">Green 5, Magenta 5</p>
+    <p id="mineLabel">Mines: not placed yet</p>
+  </div>
+  <div class="block">
+    <p id="viewLabel">Strategic view: choose a green piece</p>
+    <p id="statusLabel" role="status" aria-live="polite">Green to move. Click a green piece.</p>
+  </div>
+  <div class="row"><button id="btnBack" type="button" disabled>Strategic view (Esc)</button></div>
+  <div class="row"><button id="btnUndo" type="button" disabled>Undo move (U)</button></div>
+  <div class="row"><button id="btnEnd" type="button">End turn (T)</button></div>
+  <div id="keys">Click a piece to look out from it. Q or the scroll wheel switches between moving and flagging. Esc cancels.</div>
+</div>
+
+<div id="modeBar" data-mode="MOVE"><div id="modeLine">ACTIVE MODE: [MOVEMENT]</div><div id="modeHint">Press [Q] or Scroll Wheel to Toggle Modes | Left-Click to Execute</div></div>
+<div id="gameOver" role="dialog" aria-labelledby="goTitle"><h2 id="goTitle"></h2><p id="goText"></p><button id="goRestart" type="button">RETURN TO MAIN MENU</button></div>
+<div id="alert" role="alert"></div>
+<div id="duelHud" aria-live="polite">
+  <section class="duelPanel p1" id="duelP1Panel">
+    <div class="duelHeader"><span>PLAYER 1 · ATTACKER</span><span class="duelActiveLabel" id="duelP1Active">ACTIVE</span></div>
+    <div class="duelStats"><span id="duelP1Name">ATTACKER</span><span id="duelP1Hp">100 / 100</span></div>
+    <div class="healthTrack"><div id="duelP1Fill" class="healthFill"></div></div>
+    <div class="duelWeapon" id="duelP1Weapon">AMMO: ∞ · READY</div><div class="duelWeapon" id="duelP1Ability">UTILITY: READY · SHIFT</div>
+  </section>
+  <section class="duelPanel p2" id="duelP2Panel">
+    <div class="duelHeader"><span>PLAYER 2 · DEFENDER</span><span class="duelActiveLabel" id="duelP2Active">TAB TO CONTROL</span></div>
+    <div class="duelStats"><span id="duelP2Name">DEFENDER</span><span id="duelP2Hp">100 / 100</span></div>
+    <div class="healthTrack"><div id="duelP2Fill" class="healthFill"></div></div>
+    <div class="duelWeapon" id="duelP2Weapon">AMMO: ∞ · READY</div><div class="duelWeapon" id="duelP2Ability">UTILITY: READY · RIGHT CTRL</div>
+  </section>
+</div>
+<div id="duelSmokeP1" style="display:none;position:fixed;left:0;top:0;width:50%;height:100%;background:#050607;opacity:.94;z-index:3;pointer-events:none;filter:blur(2px);"></div><div id="duelSmokeP2" style="display:none;position:fixed;right:0;top:0;width:50%;height:100%;background:#050607;opacity:.94;z-index:3;pointer-events:none;filter:blur(2px);"></div>
+<div id="duelDivider" aria-hidden="true"></div>
+<div id="duelCrosshairP1" class="duelCrosshair" data-active="true" aria-hidden="true"><i class="h l"></i><i class="h r"></i><i class="v t"></i><i class="v b"></i></div>
+<div id="duelCrosshairP2" class="duelCrosshair" data-active="false" aria-hidden="true"><i class="h l"></i><i class="h r"></i><i class="v t"></i><i class="v b"></i></div>
+<div id="duelHint"><span>P1: WASD MOVE · Q/E TURN · SPACE FIRE</span><span>P2: ARROWS MOVE · ,/. TURN · ENTER FIRE · ESC FORFEIT</span></div>
+<div id="crosshair"><i class="h l"></i><i class="h r"></i><i class="v t"></i><i class="v b"></i></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+@font-face {
+  font-family: 'VCR OSD Mono';
+  src: url('vcr.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #20262b;
+  --panel: #ffd400;
+  --ink: #000000;
+  --idle: #f2f2f2;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html, body { height: 100%; margin: 0; background: var(--bg); overflow: hidden; }
+body { font-family: 'VCR OSD Mono', monospace; }
+#stage { position: fixed; inset: 0; display: block; width: 100%; height: 100%; }
+#hud {
+  position: fixed; left: 0; top: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px 14px calc(env(safe-area-inset-left, 0px) + 14px);
+  display: flex; flex-direction: column; gap: 6px; width: 268px; max-width: calc(100vw - 28px);
+}
+.block { background: var(--panel); color: var(--ink); padding: 10px 12px; }
+.block h1 { margin: 0; font-size: 18px; font-weight: 900; letter-spacing: 0; }
+.block p { margin: 4px 0 0; font-size: 13px; font-weight: 700; }
+.row { display: flex; gap: 6px; }
+button {
+  flex: 1; font: inherit; font-size: 13px; font-weight: 900; color: var(--ink);
+  background: var(--idle); border: 3px solid var(--ink); padding: 9px 6px; cursor: pointer; border-radius: 0;
+}
+button.active { background: var(--panel); border-color: var(--panel); outline: 3px solid var(--ink); outline-offset: -6px; }
+button:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; }
+button:disabled { background: #6b747c; color: #000; cursor: default; }
+#stage { touch-action: none; }
+#turnBlock { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 12px; border: 3px solid var(--panel); font-weight: 900; font-size: 20px; }
+#turnBlock[data-side="white"] { background: #90EE90; color: #000; }
+#turnBlock[data-side="black"] { background: #FF00FF; color: #000; }
+#turnBlock small { font-size: 14px; }
+#keys { color: var(--idle); font-size: 13px; font-weight: 700; padding: 2px 0 0; }
+#flagLabel { font-size: 18px; font-weight: 900; margin: 0; }
+#crosshair { position: fixed; left: 50%; top: 50%; width: 0; height: 0; display: none; pointer-events: none; }
+#crosshair i { position: absolute; background: #ffffff; outline: 2px solid #000000; }
+#crosshair .h { width: 14px; height: 4px; top: -2px; }
+#crosshair .v { width: 4px; height: 14px; left: -2px; }
+#crosshair .l { left: -22px; } #crosshair .r { left: 8px; }
+#crosshair .t { top: -22px; } #crosshair .b { top: 8px; }
+#alert { position: fixed; left: 50%; top: 62%; transform: translateX(-50%); display: none; pointer-events: none;
+  background: #000000; color: #ffffff; border: 3px solid #ffd400; padding: 10px 16px; font-size: 20px; font-weight: 900; }
+#crosshair[data-mode="MOVE"] i { background: #00ff2a; }
+#crosshair[data-mode="FLAG"] i { background: #ff1414; }
+#modeBar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  display: none; pointer-events: none; width: max-content; max-width: calc(100vw - 28px); text-align: center; font-weight: 900; }
+#modeLine { font-size: 20px; padding: 8px 14px; color: #000000; }
+#modeBar[data-mode="MOVE"] #modeLine { background: #00ff2a; }
+#modeBar[data-mode="FLAG"] #modeLine { background: #ff1414; }
+#modeHint { font-size: 14px; padding: 6px 14px; background: #000000; color: #ffffff; }
+#gameOver { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; width: 340px; max-width: calc(100vw - 40px);
+  background: #000000; color: #ffffff; border: 4px solid #ffd400; padding: 16px; }
+#gameOver h2 { margin: 0 0 8px; font-size: 22px; font-weight: 900; }
+#gameOver p { margin: 0 0 14px; font-size: 15px; font-weight: 700; line-height: 1.35; }
+#gameOver button { flex: none; width: 100%; }
+#duelHud { position: fixed; inset: 0; display: none; pointer-events: none; z-index: 5; }
+.duelPanel { position: absolute; top: 14px; width: calc(50% - 30px); max-width: 680px; box-sizing: border-box; background: #000; color: #fff; border: 2px solid #f2f2f2; padding: 9px 11px; }
+.duelPanel.p1 { left: 14px; }
+.duelPanel.p2 { right: 14px; }
+.duelPanel[data-active="true"] { border-color: #ffd400; }
+.duelPanel .duelHeader, .duelPanel .duelStats { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.duelPanel .duelHeader { font-size: 11px; font-weight: 900; letter-spacing: .04em; color: #ffd400; margin-bottom: 7px; }
+.duelPanel .duelStats { font-size: 13px; font-weight: 900; margin-bottom: 6px; }
+.duelPanel .duelActiveLabel { color: #ffd400; }
+.healthTrack { height: 12px; background: #454545; border: 1px solid #fff; }
+.healthFill { height: 100%; width: 100%; background: #35c759; transition: width 80ms linear; }
+.duelWeapon { margin-top: 7px; padding: 5px 7px; background: #242a2e; color: #fff; font-size: 11px; line-height: 1.25; font-weight: 900; letter-spacing: .025em; }
+#duelDivider { position: fixed; z-index: 6; left: 50%; top: 0; bottom: 0; width: 2px; display: none; transform: translateX(-1px); background: #000; border-left: 1px solid #ffd400; border-right: 1px solid #ffd400; pointer-events: none; }
+.duelCrosshair { position: fixed; top: 50%; width: 0; height: 0; display: none; pointer-events: none; z-index: 4; }
+#duelCrosshairP1 { left: 25%; }
+#duelCrosshairP2 { left: 75%; }
+.duelCrosshair i { position: absolute; background: #fff; outline: 2px solid #000; }
+.duelCrosshair .h { width: 14px; height: 4px; top: -2px; }
+.duelCrosshair .v { width: 4px; height: 14px; left: -2px; }
+.duelCrosshair .l { left: -22px; } .duelCrosshair .r { left: 8px; }
+.duelCrosshair .t { top: -22px; } .duelCrosshair .b { top: 8px; }
+.duelCrosshair[data-active="true"] i { background: #00ff2a; }
+#duelHint { position: fixed; left: 0; right: 0; bottom: 14px; display: none; grid-template-columns: 1fr 1fr; pointer-events: none; z-index: 5; color: #fff; font-size: 11px; font-weight: 900; text-align: center; }
+#duelHint span { justify-self: center; background: #000; border: 1px solid #ffd400; padding: 7px 10px; max-width: calc(100% - 24px); }
+@media (max-width: 620px) {
+  .duelPanel { top: 8px; width: calc(50% - 16px); padding: 7px 6px; }
+  .duelPanel.p1 { left: 6px; } .duelPanel.p2 { right: 6px; }
+  .duelPanel .duelHeader { font-size: 9px; gap: 3px; }
+  .duelPanel .duelStats { font-size: 11px; }
+  .duelWeapon { font-size: 9px; padding: 4px; }
+  #duelHint { bottom: 7px; font-size: 9px; }
+  #duelHint span { padding: 5px 4px; max-width: calc(100% - 10px); }
+}
+#mainMenu {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  gap: 18px; padding: 24px; box-sizing: border-box;
+  background: rgba(15, 15, 15, 0.55);
+  color: #90EE90;
+  font-family: 'VCR OSD Mono', monospace;
+  text-align: center;
+  opacity: 1; transition: opacity 0.45s linear;
+  overflow-y: auto; overscroll-behavior: contain;
+}
+#mainMenu > :first-child { margin-top: auto; }
+#mainMenu > :last-child { margin-bottom: auto; }
+#mainMenu.hidden { opacity: 0; pointer-events: none; }
+body[data-screen="menu"] #hud { display: none; }
+
+#mainMenu h1 {
+  margin: 0; padding: 18px 28px;
+  background: #181818;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: clamp(26px, 6vw, 56px); font-weight: 400; line-height: 1.2; letter-spacing: 0;
+  color: #90EE90;
+  text-shadow: 4px 4px 0px #FF00FF;
+}
+#menuSub {
+  margin: 0; padding: 8px 14px; max-width: 760px;
+  background: #181818; color: #90EE90;
+  font-size: 20px; line-height: 1.2;
+}
+
+#modeList { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 760px; }
+#modeMidline { --card: #90EE90; --alt: #FF00FF; }
+#modeHardcore { --card: #FF00FF; --alt: #90EE90; }
+#mainMenu button.modeBtn {
+  flex: 1 1 300px; box-sizing: border-box; text-align: left; padding: 16px;
+  background: #181818; color: var(--card);
+  border: 4px solid var(--card); border-radius: 0;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 13px; font-weight: 400; line-height: 1.55; letter-spacing: 0;
+  cursor: pointer;
+}
+#mainMenu button.modeBtn span {
+  display: block; margin-top: 10px;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 20px; font-weight: 400; line-height: 1.15;
+}
+#mainMenu button.modeBtn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--alt); }
+#mainMenu button.modeBtn[aria-pressed="true"] { background: var(--card); color: #181818; }
+#mainMenu button.modeBtn:focus-visible { outline: 4px solid var(--alt); outline-offset: 4px; }
+
+#mainMenu button#btnStart {
+  flex: none; width: 100%; max-width: 760px; box-sizing: border-box; padding: 20px;
+  background: #90EE90; color: #111111;
+  border: 4px solid #111111; border-radius: 0;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: clamp(16px, 3.4vw, 24px); font-weight: 400; letter-spacing: 0;
+  box-shadow: 6px 6px 0px #FF00FF;
+  cursor: pointer;
+}
+#mainMenu button#btnStart:hover { transform: translate(2px, 2px); box-shadow: 4px 4px 0px #FF00FF; }
+#mainMenu button#btnStart:active { transform: translate(6px, 6px); box-shadow: 0px 0px 0px #FF00FF; }
+#mainMenu button#btnStart:focus-visible { outline: 4px solid #90EE90; outline-offset: 10px; }
+
+#controlsGuide { width: 100%; max-width: 760px; box-sizing: border-box; text-align: left; }
+#controlsGuideTitle {
+  margin: 0 0 14px; padding: 12px 10px;
+  background: #181818; color: #90EE90;
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 14px; font-weight: 400; letter-spacing: 0; text-align: center;
+  text-shadow: 2px 2px 0px #FF00FF;
+}
+#controlsColumns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.controlsPlayer {
+  min-width: 0; box-sizing: border-box; padding: 16px;
+  background: #181818; color: var(--team);
+  border: 4px solid var(--team);
+}
+.controlsPlayer.p1Controls { --team: #90EE90; }
+.controlsPlayer.p2Controls { --team: #FF00FF; }
+.controlsPlayer h3 {
+  margin: 0 0 14px; color: var(--team);
+  font-family: 'VCR OSD Mono', monospace;
+  font-size: 12px; font-weight: 400; line-height: 1.5; letter-spacing: 0;
+}
+.controlsPhase { margin: 0 0 12px; }
+.controlsPhase:last-child { margin-bottom: 0; }
+.controlsPhase h4 {
+  margin: 0 0 4px; padding: 0 0 2px; color: var(--team);
+  border-bottom: 2px solid var(--team);
+  font-size: 20px; font-weight: 400; line-height: 1.15; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.controlsPhase ul { margin: 0; padding: 0; list-style: none; }
+.controlsPhase li { margin: 0; padding: 3px 0; color: var(--team); font-size: 20px; font-weight: 400; line-height: 1.2; }
+.controlsPhase strong { padding: 0 6px; background: var(--team); color: #181818; font-weight: 400; }
+.p2Controls .controlsPhase strong { color: #FFFFFF; text-shadow: 1px 1px 0px #000000; }
+@media (max-width: 560px) {
+  #mainMenu { gap: 12px; padding: 18px 12px; }
+  #mainMenu button.modeBtn { font-size: 12px; }
+  #controlsColumns { grid-template-columns: 1fr; gap: 12px; }
+  .controlsPlayer { padding: 12px; }
+  .controlsPlayer h3 { font-size: 11px; }
+  #controlsGuideTitle { font-size: 12px; }
+}
+
+#turnClock {
+  position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 8px);
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 40px));
+  z-index: 40; pointer-events: none; display: none;
+  font-weight: 900; text-align: center;
+}
+#turnClock .turnClockFrame {
+  background: #000000; color: #ffffff;
+  border: 3px solid #ffd400;
+  padding: 6px 10px 8px;
+}
+#turnClock[data-side="white"] .turnClockFrame { background: #90EE90; color: #000000; }
+#turnClock[data-side="black"] .turnClockFrame { background: #FF00FF; color: #000000; }
+#turnClockLabel {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px;
+}
+#turnClockReadout { font-size: 15px; letter-spacing: 0.04em; }
+#turnClockTrack {
+  height: 10px; background: #3a4047; border: 1px solid #000;
+}
+#turnClock[data-side="black"] #turnClockTrack { border-color: #000000; }
+#turnClockFill {
+  height: 100%; width: 100%; background: #35c759;
+  transition: width 100ms linear, background-color 120ms linear;
+}
+#turnClockFill[data-warn="true"] { background: #ffb100; }
+#turnClockFill[data-critical="true"] { background: #ff1414; }
+#turnClock[data-paused="true"] { opacity: 0.35; }
+
+#confirmMove {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: none; z-index: 900;
+  background: #000000; color: #ffffff;
+  border: 4px solid #ffd400;
+  padding: 18px 20px 16px;
+  width: min(420px, calc(100vw - 40px));
+  box-sizing: border-box;
+}
+#confirmMove h2 {
+  margin: 0 0 8px; font-size: 20px; font-weight: 900; letter-spacing: 0.02em;
+  color: #ffd400;
+}
+#confirmMove p {
+  margin: 0 0 14px; font-size: 14px; font-weight: 700; line-height: 1.4;
+  color: #e5e5e5;
+}
+#confirmMove .confirmActions { display: flex; gap: 10px; }
+#confirmMove button {
+  flex: 1; font-size: 16px; padding: 12px 10px;
+  border: 3px solid #ffffff; background: #ffffff; color: #000000;
+}
+#confirmMove button#confirmNo { background: #000000; color: #ffffff; }
+
+#btnUndo {
+  background: #ffd400; color: #000000; border-color: #000000;
+}
+#btnUndo:disabled { background: #6b747c; color: #000000; border-color: #000000; }
