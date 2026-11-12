@@ -29,8 +29,8 @@
   <h1 id="menuTitle">CSSSW</h1>
   <p id="menuSub">Select a minefield layout, then start the match. Green moves first.</p>
   <div id="modeList">
-    <button id="modeMidline" class="modeBtn" type="button" aria-pressed="true">MODE A: MIDLINE TRENCH<span>Default. Mines are restricted strictly to central rows 2, 3, 4 and 5.</span></button>
-    <button id="modeHardcore" class="modeBtn" type="button" aria-pressed="false">MODE B: HARDCORE MINEFIELD<span>Mines are distributed randomly across all 64 squares.</span></button>
+    <button id="modeMidline" class="modeBtn" type="button" aria-pressed="true">MIDLINE TRENCH<span>Default. Mines are restricted strictly to central rows 2, 3, 4 and 5.</span></button>
+    <button id="modeHardcore" class="modeBtn" type="button" aria-pressed="false">HARDCORE MINEFIELD<span>Mines are distributed randomly across all 64 squares.</span></button>
   </div>
   <section id="controlsGuide" aria-labelledby="controlsGuideTitle">
     <h2 id="controlsGuideTitle">CONTROLS GUIDE</h2>
@@ -38,7 +38,7 @@
       <section class="controlsPlayer p1Controls" aria-labelledby="player1ControlsTitle">
         <h3 id="player1ControlsTitle">PLAYER 1 (GREEN)</h3>
         <div class="controlsPhase">
-          <h4>Strategic Phase</h4>
+          <h4>Movement & Flagging</h4>
           <ul>
             <li><strong>Left-Click:</strong> Select Piece</li>
             <li><strong>Q / Scroll:</strong> Toggle Modes</li>
@@ -46,7 +46,7 @@
           </ul>
         </div>
         <div class="controlsPhase">
-          <h4>FPS Combat Phase</h4>
+          <h4>Capture Mode</h4>
           <ul>
             <li><strong>WASD:</strong> Move</li>
             <li><strong>Q / E:</strong> Rotate Camera Left / Right</li>
@@ -58,7 +58,7 @@
       <section class="controlsPlayer p2Controls" aria-labelledby="player2ControlsTitle">
         <h3 id="player2ControlsTitle">PLAYER 2 (MAGENTA)</h3>
         <div class="controlsPhase">
-          <h4>Strategic Phase</h4>
+          <h4>Movement & Flagging</h4>
           <ul>
             <li><strong>Left-Click:</strong> Select Piece</li>
             <li><strong>Q / Scroll:</strong> Toggle Modes</li>
@@ -66,7 +66,7 @@
           </ul>
         </div>
         <div class="controlsPhase">
-          <h4>FPS Combat Phase</h4>
+          <h4>Capture Mode</h4>
           <ul>
             <li><strong>Arrow Keys:</strong> Move</li>
             <li><strong>Comma (,) / Period (.):</strong> Rotate Camera Left / Right</li>
@@ -87,10 +87,10 @@
     <p id="mineLabel">Mines: not placed yet</p>
   </div>
   <div class="block">
-    <p id="viewLabel">Strategic view: choose a green piece</p>
+    <p id="viewLabel">Third POV: choose a green piece</p>
     <p id="statusLabel" role="status" aria-live="polite">Green to move. Click a green piece.</p>
   </div>
-  <div class="row"><button id="btnBack" type="button" disabled>Strategic view (Esc)</button></div>
+  <div class="row"><button id="btnBack" type="button" disabled>Third POV (Esc)</button></div>
   <div class="row"><button id="btnUndo" type="button" disabled>Undo move (U)</button></div>
   <div class="row"><button id="btnEnd" type="button">End turn (T)</button></div>
   <div id="keys">Click a piece to look out from it. Q or the scroll wheel switches between moving and flagging. Esc cancels.</div>
